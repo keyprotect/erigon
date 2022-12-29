@@ -41,7 +41,7 @@ var (
 	NoDiscovery = cli.BoolFlag{
 		Name:  "no-discovery",
 		Usage: "turn off or on the lightclient finding peers",
-		Value: false,
+		Value: true,
 	}
 	ChaindataFlag = cli.StringFlag{
 		Name:  "chaindata",

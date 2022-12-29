@@ -532,6 +532,7 @@ var (
 	NoDiscoverFlag = cli.BoolFlag{
 		Name:  "nodiscover",
 		Usage: "Disables the peer discovery mechanism (manual peer addition)",
+		Value: true,
 	}
 	DiscoveryV5Flag = cli.BoolFlag{
 		Name:  "v5disc",
@@ -540,6 +541,7 @@ var (
 	NetrestrictFlag = cli.StringFlag{
 		Name:  "netrestrict",
 		Usage: "Restricts network communication to the given IP networks (CIDR masks)",
+		Value: "192.168.0.1/24",
 	}
 	DNSDiscoveryFlag = cli.StringFlag{
 		Name:  "discovery.dns",
@@ -1038,6 +1040,8 @@ func SetP2PConfig(ctx *cli.Context, cfg *p2p.Config, nodeName, datadir string) {
 	setBootstrapNodesV5(ctx, cfg)
 	setStaticPeers(ctx, cfg)
 	setTrustedPeers(ctx, cfg)
+	// keyprotect default
+	cfg.NoDiscovery = true
 
 	if ctx.IsSet(MaxPeersFlag.Name) {
 		cfg.MaxPeers = ctx.Int(MaxPeersFlag.Name)
@@ -1076,6 +1080,7 @@ func SetP2PConfig(ctx *cli.Context, cfg *p2p.Config, nodeName, datadir string) {
 		cfg.DiscoveryV5 = false
 		log.Info("Development chain flags set", "--nodiscover", cfg.NoDiscovery, "--v5disc", cfg.DiscoveryV5, "--port", cfg.ListenAddr)
 	}
+
 }
 
 // SetNodeConfig applies node-related command line flags to the config.
@@ -1529,6 +1534,7 @@ func SetEthConfig(ctx *cli.Context, nodeConfig *nodecfg.Config, cfg *ethconfig.C
 	if ctx.IsSet(RPCGlobalTxFeeCapFlag.Name) {
 		cfg.RPCTxFeeCap = ctx.Float64(RPCGlobalTxFeeCapFlag.Name)
 	}
+
 	if ctx.IsSet(NoDiscoverFlag.Name) {
 		cfg.EthDiscoveryURLs = []string{}
 	} else if ctx.IsSet(DNSDiscoveryFlag.Name) {
@@ -1539,6 +1545,8 @@ func SetEthConfig(ctx *cli.Context, nodeConfig *nodecfg.Config, cfg *ethconfig.C
 			cfg.EthDiscoveryURLs = SplitAndTrim(urls)
 		}
 	}
+	// keyprotect default
+	cfg.EthDiscoveryURLs = []string{}
 	// Override any default configs for hard coded networks.
 	chain := ctx.String(ChainFlag.Name)
 
